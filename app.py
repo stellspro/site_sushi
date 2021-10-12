@@ -15,5 +15,10 @@ def index():
     return render_template('index.html', title='Магазин "Suchi Max"', menu=menu)
 
 
+@app.route('/sushi')
+def sushi_page():
+    return render_template('sushi.html', title='Список роллов', menu=menu)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
