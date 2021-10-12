@@ -12,7 +12,7 @@ menu = [{'name': 'Главная страница', 'url': '/'},
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', title='Магазин "Suchi Max"', menu=menu)
+    return render_template('index.html', title='Магазин "Sushi Max"', menu=menu)
 
 
 @app.route('/sushi')
