@@ -1,10 +1,10 @@
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, redirect
 from flask_security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from flask_security import SQLAlchemyUserDatastore
-from flask_admin import Admin
+from flask_security import SQLAlchemyUserDatastore, current_user
+from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 
 app = Flask(__name__)
@@ -44,13 +44,28 @@ class User(db.Model, UserMixin):
                             backref=db.backref('users', lazy='dynamic'))
 
 
-admin = Admin(app)
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Role, db.session))
+class AdminMixin:
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('security.login', next=request.url))
+
+
+class AdminView(AdminMixin, ModelView):
+    pass
+
+
+class HomeAdminView(AdminMixin, AdminIndexView):
+    pass
+
+
+admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
+admin.add_view(AdminView(User, db.session))
+admin.add_view(AdminView(Role, db.session))
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
-
 
 
 @app.route('/')
