@@ -6,6 +6,7 @@ from datetime import datetime
 from flask_security import SQLAlchemyUserDatastore, current_user
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
@@ -23,9 +24,26 @@ app.config['SECURITY_PASSWORD_HASH'] = 'bcrypt'
 
 db = SQLAlchemy(app)
 
+migrate = Migrate(app, db)
+
+# def create_app():
+#     """Application-factory pattern"""
+#     ...
+#     ...
+#     db.init_app(app)
+#     migrate.init_app(app, db)
+#     ...
+#     ...
+#     return app
+
+
 roles_users = db.Table('roles_users',
                        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
                        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
+product_category = db.Table('product_category',
+                            db.Column('product_id', db.Integer(), db.ForeignKey('product.id')),
+                            db.Column('category_id', db.Integer(), db.ForeignKey('category.id')))
 
 
 class Role(db.Model, RoleMixin):
@@ -42,6 +60,25 @@ class User(db.Model, UserMixin):
     date = db.Column(db.DateTime, default=datetime.now())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+
+
+class Product(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80))
+    description = db.Column(db.String(255))
+    price = db.Column(db.Integer())
+    discount_price = db.Column(db.Integer())
+    category = db.relationship('Category', secondary=product_category,
+                               backref=db.backref('Products', lazy='dynamic'))
+
+
+class Category(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80))
+    description = db.Column(db.String(255))
+
+    def __repr__(self):
+        return '{}'.format(self.name)
 
 
 class AdminMixin:
@@ -63,6 +100,8 @@ class HomeAdminView(AdminMixin, AdminIndexView):
 admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
 admin.add_view(AdminView(User, db.session))
 admin.add_view(AdminView(Role, db.session))
+admin.add_view(AdminView(Product, db.session))
+admin.add_view(AdminView(Category, db.session))
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
