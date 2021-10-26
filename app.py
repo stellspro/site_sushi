@@ -71,6 +71,9 @@ class Product(db.Model):
     category = db.relationship('Category', secondary=product_category,
                                backref=db.backref('Products', lazy='dynamic'))
 
+    def __repr__(self):
+        return '{}'.format(self.name)
+
 
 class Category(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -109,9 +112,15 @@ security = Security(app, user_datastore)
 
 @app.route('/')
 @app.route('/index')
-@login_required
 def index():
     return render_template('index.html', title='Магазин "Sushi Max"', menu=menu)
+
+
+@app.route('/pizza')
+def show_pizza():
+    category = Category.query.filter(Category.id == 1).first()
+    pizzas = category.Products.all()
+    return render_template('pizza.html', title='Наши пиццы', pizzas=pizzas, menu=menu)
 
 
 if __name__ == '__main__':
