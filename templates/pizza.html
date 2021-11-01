@@ -6,9 +6,32 @@
 <br>
 {% block content_title %}{% endblock %}
 {% block content %}
-<h1>{{ title }}</h1>
 
-{% for pizza in pizzas %}
-<h3>{{ pizza }} - {{ pizza.description }}</h3>
-{% endfor %}
+<div class="pizza" style="background-color:#b4b4b4fa;">
+    
+    <div class="container">
+        <div class="row">
+            {% for pizza in pizzas %}
+    <div class="col-xl-3 col-md-6 col-sm-12" style="display: flex; align-self: stretch;">
+        <div class="card " style="width: 15rem; margin-bottom: 20px; margin-top: 20px; background-color:#dad6d6c7;">
+            <img src="/static/img/{{ pizza.image }}" class="img-thumbnail" alt="...">
+            <div class="card-body" style="display: flex;
+            flex-direction: column;
+            justify-content: space-between;">
+            <div>
+                <h4 class="card-title"><strong>{{ pizza }}</strong></h4>
+                <br>
+                <h5 class="card-title" style="color:chocolate;">{{ pizza.price }} р.</h5>
+                <br>
+                <p class="card-text"><em>{{ pizza.description }}</em></p>
+                <br>
+            </div>
+            <button type="button" class="btn btn-outline-dark">Добавить в корзину</button>
+            </div>
+        </div>
+    </div>
+{% endfor %}         
+        </div>
+    </div>    
+</div>
 {% endblock %}

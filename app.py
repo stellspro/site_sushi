@@ -13,7 +13,8 @@ app = Flask(__name__)
 menu = [{'name': 'Главная страница', 'url': '/'},
         {'name': 'Роллы', 'url': '/sushi'},
         {'name': 'Пиццы', 'url': '/pizza'},
-        {'name': 'Салаты и закуски', 'url': '/salads'}
+        {'name': 'Салаты и закуски', 'url': '/salads'},
+        {'name': 'Корзина', 'url': '/my_cart'}
         ]
 
 app.config['SECRET_KEY'] = 'super-secret'
@@ -68,8 +69,11 @@ class Product(db.Model):
     description = db.Column(db.String(255))
     price = db.Column(db.Integer())
     discount_price = db.Column(db.Integer())
+    image = db.Column(db.String(255))
     category = db.relationship('Category', secondary=product_category,
                                backref=db.backref('Products', lazy='dynamic'))
+
+    carts = db.relationship('Cart', backref='product', lazy='dynamic')
 
     def __repr__(self):
         return '{}'.format(self.name)
@@ -92,6 +96,26 @@ class AdminMixin:
         return redirect(url_for('security.login', next=request.url))
 
 
+# Корзина + заказ
+class Order(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user_name = db.Column(db.String(80))
+    phone = db.Column(db.Integer())
+    address = db.Column(db.Text)
+    payment = db.Column(db.String(15))
+    date = db.Column(db.DateTime, default=datetime.now())
+    carts = db.relationship('Cart', backref='order', lazy='dynamic')
+
+    def __repr__(self):
+        return f'{self.user_name}, адрес: {self.address}, номер телефона: {self.phone}'
+
+
+class Cart(db.Model):
+    order_id = db.Column(db.Integer(), db.ForeignKey('order.id'), primary_key=True)
+    product_id = db.Column(db.Integer(), db.ForeignKey('product.id'), primary_key=True)
+    count = db.Column(db.Integer())
+
+
 class AdminView(AdminMixin, ModelView):
     pass
 
@@ -105,6 +129,8 @@ admin.add_view(AdminView(User, db.session))
 admin.add_view(AdminView(Role, db.session))
 admin.add_view(AdminView(Product, db.session))
 admin.add_view(AdminView(Category, db.session))
+admin.add_view(AdminView(Order, db.session))
+admin.add_view(AdminView(Cart, db.session))
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
