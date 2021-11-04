@@ -7,6 +7,7 @@ from flask_security import SQLAlchemyUserDatastore, current_user
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_migrate import Migrate
+from sqlalchemy.orm import joinedload
 
 app = Flask(__name__)
 
@@ -147,6 +148,17 @@ def show_pizza():
     category = Category.query.filter(Category.id == 1).first()
     pizzas = category.Products.all()
     return render_template('pizza.html', title='Наши пиццы', pizzas=pizzas, menu=menu)
+
+
+@app.route('/my_cart')
+def my_cart():
+    order = Order.query.filter(Order.id == 1).first()
+    # my_products = Cart.query.filter(Order.user_name == 'Петя')
+    my = order.carts
+
+    products = my.options(joinedload('product'))
+
+    return render_template('my_cart.html', title='Корзина', menu=menu, products=products)
 
 
 if __name__ == '__main__':

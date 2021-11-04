@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+{% for counts in count %}
+{{ count }}
+{% endfor %}
+<div class="container" style="padding: 20px; margin: 20px;"></div>
+{% for product in products %}
+
+{{ product.product.name }}
+{{ product.product.price }}
+
+<img src="/static/img/{{ product.product.image }}" alt="">
+<br>
+
+{% endfor %}
+</div>
+{% endblock %}
