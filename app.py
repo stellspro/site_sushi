@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, request, render_template, url_for, redirect, session
 from flask_security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +8,7 @@ from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_migrate import Migrate
 from sqlalchemy.orm import joinedload
+import jinja2
 
 app = Flask(__name__)
 
@@ -125,7 +126,7 @@ class HomeAdminView(AdminMixin, AdminIndexView):
     pass
 
 
-admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
+admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name="Home"))
 admin.add_view(AdminView(User, db.session))
 admin.add_view(AdminView(Role, db.session))
 admin.add_view(AdminView(Product, db.session))
@@ -136,29 +137,48 @@ admin.add_view(AdminView(Cart, db.session))
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 
-
+list_product = []
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html', title='Магазин "Sushi Max"', menu=menu)
 
 
-@app.route('/pizza')
+@app.route('/pizza', methods=['POST', 'GET'])
 def show_pizza():
+
+    if request.method == 'POST':
+
+        list_product.append(int(request.form['index']))
+        session['products'] = list_product
+        print(list_product)
+        # session['products'] = int(request.form['index'])
+        category = Category.query.filter(Category.id == 1).first()
+        pizzas = category.Products.all()
+        return render_template('pizza.html', title='Наши пиццы', pizzas=pizzas, menu=menu)
     category = Category.query.filter(Category.id == 1).first()
     pizzas = category.Products.all()
     return render_template('pizza.html', title='Наши пиццы', pizzas=pizzas, menu=menu)
 
 
-@app.route('/my_cart')
+@app.route('/my_cart', methods=['POST', 'GET'])
 def my_cart():
-    order = Order.query.filter(Order.id == 1).first()
-    # my_products = Cart.query.filter(Order.user_name == 'Петя')
-    my = order.carts
-
-    products = my.options(joinedload('product'))
-
+    # if request.method == 'POST':
+    #     delete_product = request.form['delete_product']
+    #     product_id = session['products']
+    products_id = (session.get('products', []))
+    products = Product.query.filter(Product.id.in_(products_id)).all()
     return render_template('my_cart.html', title='Корзина', menu=menu, products=products)
+
+
+#
+# order = Order.query.filter(Order.id == 1).first()
+# # my_products = Cart.query.filter(Order.user_name == 'Петя')
+# my = order.carts
+#
+# products = my.options(joinedload('product'))
+#
+# return render_template('my_cart.html', title='Корзина', menu=menu, products=products)
 
 
 if __name__ == '__main__':
