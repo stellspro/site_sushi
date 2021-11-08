@@ -31,20 +31,20 @@
 
     <div class="row">
         <div class="col-12">
-            <form action="{{ url_for('my_cart') }}" method="POST">
-        <div class="input-group">
-            <span class="input-group-text">Ваше Имя и телефон</span>
-            <input type="text" aria-label="First name" class="form-control">
-            <input type="text" aria-label="Last name" class="form-control">
-        </div>
-        <div class="input-group">
-            <span class="input-group-text">Адрес</span>
-            <textarea class="form-control" aria-label="With textarea"></textarea>
-        </div>
-        <input type="submit" class="btn btn-outline-dark" style="margin-top: 20px;" value="Заказать">
-    </form>
+            <form action="{{ url_for('checkout') }}" method="POST">
+                <div class="input-group">
+                    <span class="input-group-text">Ваше Имя и телефон</span>
+                    <input type="text" aria-label="First name" class="form-control" name="first_name">
+                    <input type="text" aria-label="Phone" class="form-control" name="phone">
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text">Адрес</span>
+                    <textarea class="form-control" aria-label="With textarea" name="address"></textarea>
+                </div>
+                <input type="submit" class="btn btn-outline-dark" style="margin-top: 20px;" value="Заказать">
+            </form>
         </div>
     </div>
-
 </div>
+
 {% endblock %}
