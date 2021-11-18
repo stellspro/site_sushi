@@ -38,6 +38,3 @@ migrate = Migrate(app, db)
 # products = my.options(joinedload('product'))
 #
 # return render_template('my_cart.html', title='Корзина', menu=menu, products=products)
-
-
-
