@@ -1,4 +1,13 @@
-.container {
+.flash {
     padding: 10px;
-    margin-top: 10px;
+}
+
+.flash.success {
+    border: 1px solid #21db56;
+    background: #AEFFC5;
+}
+
+.flash.error {
+    border: 1px solid #ff4343;
+    background: #ff9c9c;
 }
