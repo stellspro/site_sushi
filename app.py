@@ -8,10 +8,11 @@ from config import Configuration
 app = Flask(__name__)
 app.config.from_object(Configuration)
 
-menu = [{'name': 'Главная страница', 'url': '/'},
+menu = [
         {'name': 'Роллы', 'url': '/sushi'},
         {'name': 'Пиццы', 'url': '/pizza'},
-        {'name': 'Салаты и закуски', 'url': '/salads'},
+        {'name': 'Салаты', 'url': '/salads'},
+        {'name': 'Закуски', 'url': '/snacks'},
         {'name': 'Корзина', 'url': '/my_cart'}
         ]
 

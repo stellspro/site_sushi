@@ -31,12 +31,66 @@ def show_pizza():
     return render_template('pizza.html', title='Наши пиццы', menu=menu)
 
 
+@app.route('/salads', methods=['POST', 'GET'])
+def show_salads():
+    return render_template('salads.html', title='Наши пиццы', menu=menu)
+
+
+@app.route('/snacks', methods=['POST', 'GET'])
+def show_snacks():
+    return render_template('snacks.html', title='Наши пиццы', menu=menu)
+
+
+@app.route('/sushi', methods=['POST', 'GET'])
+def show_sushi():
+    return render_template('sushi.html', title='Наши пиццы', menu=menu)
+
+
 @app.route('/get-pizza', methods=['POST', 'GET'])
 def get_pizza():
     products = {}
     category = Category.query.filter(Category.id == 1).first()
     pizzas = category.Products.all()
     for i in pizzas:
+        b = {'id': f'{i.id}', 'name': f'{i.name}', 'description': f'{i.description}', 'price': f'{int(i.price)}',
+             'image': f'{i.image}'}
+        products[i.id] = b
+    json_products = json.dumps(products)
+    return json_products
+
+
+@app.route('/get-sushi', methods=['POST', 'GET'])
+def get_sushi():
+    products = {}
+    category = Category.query.filter(Category.id == 4).first()
+    sushi = category.Products.all()
+    for i in sushi:
+        b = {'id': f'{i.id}', 'name': f'{i.name}', 'description': f'{i.description}', 'price': f'{int(i.price)}',
+             'image': f'{i.image}'}
+        products[i.id] = b
+    json_products = json.dumps(products)
+    return json_products
+
+
+@app.route('/get-salads', methods=['POST', 'GET'])
+def get_salads():
+    products = {}
+    category = Category.query.filter(Category.id == 3).first()
+    salads = category.Products.all()
+    for i in salads:
+        b = {'id': f'{i.id}', 'name': f'{i.name}', 'description': f'{i.description}', 'price': f'{int(i.price)}',
+             'image': f'{i.image}'}
+        products[i.id] = b
+    json_products = json.dumps(products)
+    return json_products
+
+
+@app.route('/get-snacks', methods=['POST', 'GET'])
+def get_snacks():
+    products = {}
+    category = Category.query.filter(Category.id == 2).first()
+    snacks = category.Products.all()
+    for i in snacks:
         b = {'id': f'{i.id}', 'name': f'{i.name}', 'description': f'{i.description}', 'price': f'{int(i.price)}',
              'image': f'{i.image}'}
         products[i.id] = b
@@ -56,7 +110,8 @@ def get_products():
     products = {}
     list_products = Product.query.all()
     for i in list_products:
-        b = {'id': f'{i.id}', 'name': f'{i.name}', 'description': f'{i.description}', 'price': f'{int(i.price)}'}
+        b = {'id': f'{i.id}', 'name': f'{i.name}', 'description': f'{i.description}', 'price': f'{int(i.price)}',
+             'image': f'{i.image}'}
         products[i.id] = b
     json_products = json.dumps(products)
     return json_products

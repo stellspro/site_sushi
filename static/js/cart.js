@@ -8,11 +8,11 @@ let myModal = new bootstrap.Modal(document.getElementById('exampleModal'),{
 
 
 
-$.getJSON('/get-pizza', function(data) {
+$.getJSON('/get-products', function(data) {
     let goods = data;
-    // console.log(goods);
-    checkCart();
-    showCart();
+    // console.log(goods)
+    checkCart()
+    showCart()
 
     function showCart(){
         if ($.isEmptyObject(cart)) {
@@ -20,10 +20,11 @@ $.getJSON('/get-pizza', function(data) {
             $('#cart').html(out);
         }
         else{
-            let out = "";
-            let summ = 0;        
+            let out = ""
+            let summ = 0  
             for (let key in cart){    
                 out+=`<div class="col-xl-12 col-md-6 col-sm-12" style="display: flex; align-self: stretch;">`
+                out+='<button class="delete btn-close" data-art="'+key+'"></button>'
                 out+=`<div class="card " style="width: 15rem; margin-bottom: 20px; margin-top: 20px; background-color:#dad6d6c7;">`
                 out+=`<img src="/static/img/${goods[key].image}" alt="">`
                 out+=`<div class="card-body" style="display: flex flex-direction: column justify-content: space-between;">`
@@ -32,25 +33,30 @@ $.getJSON('/get-pizza', function(data) {
                 out+='<br>'
                 // out+=`<h4>Цена: ${goods[key].price}</h4>`
                 out+='<br>'
-                out+=`<h4>Количество:${cart[key]}</h4>`
-                out+='<br>'
+                out+='<button class="minus btn-secondary btn-sm" data-art="'+key+'"> - </button>'
+                out+=`<h5>Количество: ${cart[key]}</h5>`
+                out+='<button class="plus btn-secondary btn-sm" data-art="'+key+'"> + </button>'
+                
                 out+=`</div>`
-                out+= '<button class="delete" data-art="'+key+'">Удалить из корзины</button>';
+                out+='<br>'
+                
+                out+= '<br>'
                 // out+= goods[key].coast + 'руб';  
-                out+= '<button class="minus" data-art="'+key+'">-</button>';
+                
                 // out+= cart[key];   
-                out+= '<button class="plus" data-art="'+key+'">+</button>';
-                out+= cart[key]*goods[key].price + 'руб';
+                
+                out+= cart[key]*goods[key].price + 'руб'
                 out+= '<br>'
                 out+=`</div>`
                 out+=`</div>`
                 out+=`</div>`
-                summ+= cart[key]*goods[key].price;
+                summ+= cart[key]*goods[key].price
             }
-            out+= '<p> Всего:  '+summ+' рублей</p>';
-        
-            out+= '<button class="add btn-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Заказать </button>'
-            // out+=`</div>`
+            out+= '<p> Всего:  '+summ+' рублей</p>'
+            
+            out+=`<div>`
+            out+= '<button class="add btn-dark" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Заказать </button>'
+            out+=`</div>`
             $('#cart').html(out);
             $('.plus').on('click', plusGoods)
             $('.minus').on('click', minusGoods)
@@ -62,26 +68,26 @@ $.getJSON('/get-pizza', function(data) {
     }
 
     function plusGoods(){
-        let articul = $(this).attr('data-art');
-        cart[articul]++;
-        saveGoodsToLS();
-        showCart();
+        let articul = $(this).attr('data-art')
+        cart[articul]++
+        saveGoodsToLS()
+        showCart()
     }
 
     function minusGoods(){
-        let articul = $(this).attr('data-art');
-        if (cart[articul] >1) cart[articul]--;
-        else delete cart[articul];
-        saveGoodsToLS();
-        showCart();
+        let articul = $(this).attr('data-art')
+        if (cart[articul] >1) cart[articul]--
+        else delete cart[articul]
+        saveGoodsToLS()
+        showCart()
         
     }
 
     function deleteGoods(){
-        let articul = $(this).attr('data-art');
-        delete cart[articul];
-        saveGoodsToLS();
-        showCart();
+        let articul = $(this).attr('data-art')
+        delete cart[articul]
+        saveGoodsToLS()
+        showCart()
     }
     function takeCart() {
         let products_id = []
@@ -143,10 +149,10 @@ $.getJSON('/get-pizza', function(data) {
 function checkCart() {
     // проверяем наличие корзины в localstorage
     if  (localStorage.getItem('cart') != null) {
-        cart = JSON.parse(localStorage.getItem('cart'));
+        cart = JSON.parse(localStorage.getItem('cart'))
     }
 }
 
 function saveGoodsToLS(){
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart))
 }
