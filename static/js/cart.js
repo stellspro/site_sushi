@@ -10,11 +10,12 @@ let myModal = new bootstrap.Modal(document.getElementById('exampleModal'),{
 
 $.getJSON('/get-products', function(data) {
     let goods = data;
-    // console.log(goods)
+    // получение списка продуктов с сервера
     checkCart()
     showCart()
 
     function showCart(){
+        //Вывод продуктов в корзине
         if ($.isEmptyObject(cart)) {
             out = 'Корзина пуста. Добавьте товар в корзину. <a href="/">Главная страница</>';
             $('#cart').html(out);
@@ -68,6 +69,7 @@ $.getJSON('/get-products', function(data) {
     }
 
     function plusGoods(){
+        //Увеличить количество единиц продукта
         let articul = $(this).attr('data-art')
         cart[articul]++
         saveGoodsToLS()
@@ -75,6 +77,7 @@ $.getJSON('/get-products', function(data) {
     }
 
     function minusGoods(){
+        //Уменьшить количество единиц продукта
         let articul = $(this).attr('data-art')
         if (cart[articul] >1) cart[articul]--
         else delete cart[articul]
@@ -84,12 +87,14 @@ $.getJSON('/get-products', function(data) {
     }
 
     function deleteGoods(){
+        //Удалить продукт из корзины
         let articul = $(this).attr('data-art')
         delete cart[articul]
         saveGoodsToLS()
         showCart()
     }
     function takeCart() {
+        //передача готового заказа на сервер
         let products_id = []
         let products_coast = []
         console.log(cart)
@@ -115,7 +120,8 @@ $.getJSON('/get-products', function(data) {
     
    
     
-    document.querySelector('button.add_new').addEventListener('click', function(e) {    
+    document.querySelector('button.add_new').addEventListener('click', function(e) {
+    //    получение данных пользователя из формы
     let user_name = document.getElementById('name_user').value
     let phone = document.getElementById('user_phone').value
     let address = document.getElementById('address').value
@@ -132,6 +138,7 @@ $.getJSON('/get-products', function(data) {
         console.log(address)
         takeCart()       
     } else {
+            //ошибка, если пользователь не заполнил все обязательные поля
             Swal.fire({
                 icon: 'error',
                 title: 'Ошибка',
@@ -154,5 +161,6 @@ function checkCart() {
 }
 
 function saveGoodsToLS(){
+    // сохранение продуктов в localstorage
     localStorage.setItem('cart', JSON.stringify(cart))
 }

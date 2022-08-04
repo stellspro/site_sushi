@@ -8,10 +8,11 @@ $(document).ready(function(){
 
 function loadGoods(){
     $.post('/get-sushi', function (data) {
-        // console.log(data);
+        // получение списка продуктов по категории
         data = JSON.parse(data)
         console.log(data)
         let goods = ``
+        // вывод продуктов на странице
         for (let i in data){
             goods+=`<div class="col-xl-3 col-md-6 col-sm-12" style="display: flex; align-self: stretch;">`
             goods+=`<div class="card " style="width: 15rem; margin-bottom: 20px; margin-top: 20px; background-color:#dad6d6c7;">`
@@ -38,7 +39,7 @@ function loadGoods(){
 }
 
 function addToCart() {
-    // add products to cart
+    // добавление продуктов в корзину
     let articul = $(this).attr('data-art')
     if (cart[articul] != undefined) {
         cart[articul]++;
@@ -52,7 +53,7 @@ function addToCart() {
 }
 
 function checkCart() {
-    // проверяем наличие корзины в localstorage
+    // проверка наличия корзины в localstorage
     if  (localStorage.getItem('cart') != null) {
         cart = JSON.parse(localStorage.getItem('cart'));
     }
@@ -60,7 +61,7 @@ function checkCart() {
 
 function showMiniCart() {
     $.post('/get-products', function (data) {
-    //выводим содержимое мини корзины
+    //вывод содержимого мини корзины
     data = JSON.parse(data)
     let goods = data
     let out = ''

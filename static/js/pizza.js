@@ -8,9 +8,10 @@ $(document).ready(function(){
 
 function loadGoods(){
     $.post('/get-pizza', function (data) {
-        // console.log(data);
+        // получение списка продуктов по категории
         data = JSON.parse(data)
         console.log(data)
+        //вывод продуктов на странице
         let goods = ``
         for (let i in data){
             goods+=`<div class="col-xl-3 col-md-6 col-sm-12" style="display: flex; align-self: stretch;">`
@@ -33,12 +34,11 @@ function loadGoods(){
         $('#pizza').html(goods);
         $('button.add_cart').on('click', addToCart)
         console.log(data[1]['price'])
-        // document.querySelector('.total-price').innerHTML = data[1]['price']
     });
 }
 
 function addToCart() {
-    // add products to cart
+    // Добавление продукта в корзину
     let articul = $(this).attr('data-art')
     if (cart[articul] != undefined) {
         cart[articul]++;
@@ -47,12 +47,11 @@ function addToCart() {
        cart[articul] = 1
     }
     localStorage.setItem('cart', JSON.stringify(cart))
-    // console.log(cart);
     showMiniCart()
 }
 
 function checkCart() {
-    // проверяем наличие корзины в localstorage
+    // проверка наличия корзины в localstorage
     if  (localStorage.getItem('cart') != null) {
         cart = JSON.parse(localStorage.getItem('cart'));
     }
@@ -60,7 +59,7 @@ function checkCart() {
 
 function showMiniCart() {
     $.post('/get-products', function (data) {
-    //выводим содержимое мини корзины
+    //вывод содержимого мини корзины
     data = JSON.parse(data)
     let goods = data
     let out = ''

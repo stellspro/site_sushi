@@ -22,6 +22,7 @@ class ProductInCart:
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    """Обработка команды 'start'"""
     sessions[f'{message.chat.id}'] = {'products': {}}
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     btn_menu = types.KeyboardButton('🍽 Меню')
@@ -37,6 +38,7 @@ def start(message):
 def menu(message):
     if message:
         if message.text == '🍽 Меню':
+            # обработка кнопки "Меню"
             markup = types.InlineKeyboardMarkup(row_width=2)
             print(type(markup))
             cat = Category.query.all()
@@ -48,12 +50,15 @@ def menu(message):
             bot.send_message(message.chat.id, '<b>Выберите категорию:</b>', parse_mode='html', reply_markup=markup)
 
         if message.text == '🗑 Корзина':
+            # обработка кнопки "Корзина"
             if len(sessions[f'{message.chat.id}']['products']) == 0:
+                # если корзина пустая
                 cart_markup = types.InlineKeyboardMarkup(row_width=2)
                 btn = types.InlineKeyboardButton('⬅️  В каталог', callback_data='back')
                 cart_markup.add(btn)
                 bot.send_message(message.chat.id, '🙁  Ваша корзина пуста', reply_markup=cart_markup)
             else:
+                # если в корзине есть продукты
                 products = sessions[f'{message.chat.id}']['products']
                 print(products)
                 if len(products) > 0:
@@ -74,6 +79,7 @@ def menu(message):
                                      reply_markup=get_two_buttons('Оформить заказ', 'sc', 'Очистить корзину', 'del'))
 
         if message.text == '📜 О нас':
+            # обработка кнопки "О нас"
             markup = types.InlineKeyboardMarkup(row_width=2)
             btn_edit = types.InlineKeyboardButton('Редактировать', callback_data='edit_message')
             markup.add(btn_edit)
@@ -81,6 +87,7 @@ def menu(message):
 
 
 def get_two_buttons(name_first_btn, callback_data1, name_second_btn, callback_data2):
+    """Возвращает две InlineKeyboardButton"""
     markup = types.InlineKeyboardMarkup(row_width=2)
     btn_first = types.InlineKeyboardButton(f'{name_first_btn}', callback_data=f'{callback_data1}')
     btn_second = types.InlineKeyboardButton(f'{name_second_btn}', callback_data=f'{callback_data2}')
@@ -89,12 +96,14 @@ def get_two_buttons(name_first_btn, callback_data1, name_second_btn, callback_da
 
 
 def delete_from_cart(call, product):
+    """Удаляет продукт из корзины пользователя"""
     del sessions[f'{call.message.chat.id}']['products'][f'{product.product_id}']
     bot.answer_callback_query(callback_query_id=call.id, text='Удалено из корзины')
     print(sessions[f'{call.message.chat.id}'])
 
 
 def get_product(call, product_cat):
+    """Отобращает продукты в переданной категории"""
     print(call.data)
     category = Category.query.filter(Category.id == product_cat).first()
     product = category.Products.all()[0:1]
@@ -103,7 +112,7 @@ def get_product(call, product_cat):
         user_session = call.message.chat.id
         if str(call.message.chat.id) in sessions and 'products' in sessions[str(user_session)] and str(
                 key.name) in sessions[str(user_session)]['products']:
-            # get_two_buttons('🛍 В корзину', key.name, '⬅️ Назад', 'back')
+            # Если продукт добавлен в корзину, кнопка "Добавить в корзину" заменяется на "Удалить из корзины"
             pic = open(f'static/img/{key.image}', 'rb')
             bot.send_message(call.message.chat.id, key.name)
             bot.send_photo(call.message.chat.id, pic,
@@ -113,6 +122,7 @@ def get_product(call, product_cat):
                                                         'back'))
 
         else:
+            # Если продукт не добавлен в корзину
             pic = open(f'static/img/{key.image}', 'rb')
             bot.send_message(call.message.chat.id, key.name)
             bot.send_photo(call.message.chat.id, pic, reply_markup=get_two_buttons('🛍 В корзину',
@@ -126,6 +136,7 @@ def callback(call):
     if call.message:
         products = [str(name.id) for name in Product.query.all()]
         print(products)
+        # Обработка кнопки "пицца"
         if call.data == 'Пицца':
             category = Category.query.filter(Category.id == 1).first()
             pizzas = category.Products.all()[0:3]
@@ -135,18 +146,22 @@ def callback(call):
             get_product(call, 1)
 
         if call.data == 'Роллы':
+            # Обработка кнопки "роллы"
             bot.send_message(call.message.chat.id, '<b>Выберите ролл:</b>', parse_mode='html')
             get_product(call, 4)
 
         if call.data == 'Салаты':
+            # Обработка кнопки "салаты"
             bot.send_message(call.message.chat.id, '<b>Выберите салат:</b>', parse_mode='html')
             get_product(call, 3)
 
         if call.data == 'Закуски':
+            # Обработка кнопки "закуски"
             bot.send_message(call.message.chat.id, '<b>Выберите закуски:</b>', parse_mode='html')
             get_product(call, 2)
 
         if call.data == 'back':
+            # Обработка кнопки "Назад"
             markup = types.InlineKeyboardMarkup(row_width=2)
             cat = Category.query.all()
             for i in range(len(cat)):
@@ -157,7 +172,7 @@ def callback(call):
             bot.send_message(call.message.chat.id, '<b>Выберите категорию:</b>', parse_mode='html', reply_markup=markup)
 
         if call.data in products:
-            print('asdf')
+            # Добавление продукта в корзину
             try:
                 appended_product_id = (Product.query.filter(Product.id == call.data).first())
                 print(type(appended_product_id.id), appended_product_id.id)
@@ -170,8 +185,6 @@ def callback(call):
                                                                            f'delete{appended_product.product_id}',
                                                                            '⬅️ Назад',
                                                                            'back'))
-
-                # bot.answer_callback_query(callback_query_id=call.id, text='Добавлено в корзину')
             except KeyError:
                 print('ЧТо то пошло не так')
                 # empty_list[f'{call.message.chat.id}'] = {
@@ -186,6 +199,7 @@ def callback(call):
                 print(sessions)
 
         if call.data == 'del':
+            # Обработка кнопки "Очистить корзину"
             sessions[f'{call.message.chat.id}']['products'].clear()
             # print(empty_list)
             cart_markup = types.InlineKeyboardMarkup(row_width=2)
@@ -194,6 +208,7 @@ def callback(call):
             bot.send_message(call.message.chat.id, '🙁 Корзина пуста', reply_markup=cart_markup)
 
         if call.data == 'sc':
+            # Обработка кнопки "Оформить заказ"
             name = 'denis'
             phone = '1234'
             address = '30 let WLKSM'
@@ -218,6 +233,7 @@ def callback(call):
             bot.send_message(call.message.chat.id, 'Успешно, ждите звонка оператора')
 
         if call.data.startswith('down'):
+            # обработка кнопки "вниз"
             pr_id = int(call.data[4:])
             print(pr_id)
             pr = sessions[f'{call.message.chat.id}']['products'][f'{pr_id}']
@@ -237,6 +253,7 @@ def callback(call):
                 pass
 
         if call.data.startswith('up'):
+            # обработка кнопки "вверх"
             print(call.data)
             pr_id = int(call.data[2:])
             print(pr_id)
@@ -255,16 +272,8 @@ def callback(call):
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                           reply_markup=buttons)
 
-        if call.data == 'edit_message':
-            # bot.send_message(call.message.chat.id, f'{call.message}')
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                  text='Отредактировано')
-            # @bot.callback_query_handler(func=lambda call: True)
-            # def callback_cart(call):
-            #     if call.message:
-            #         if call.data == 'add-1':
-            #             print('фывафыва')
         if call.data.startswith('delete'):
+            # Обработка кнопки "Удалить товар из корзины ❌"
             print(call.data)
             pr_id = int(call.data[6:])
             product = ProductInCart(product_id=pr_id, product_coast=1)

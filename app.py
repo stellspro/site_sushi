@@ -1,7 +1,6 @@
 from flask import Flask, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy.orm import joinedload
 from config import Configuration
 from flask_security import RoleMixin, UserMixin
 from datetime import datetime
