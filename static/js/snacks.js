@@ -34,7 +34,6 @@ function loadGoods(){
         $('#pizza').html(goods);
         $('button.add_cart').on('click', addToCart)
         console.log(data[1]['price'])
-        // document.querySelector('.total-price').innerHTML = data[1]['price']
     });
 }
 
@@ -48,7 +47,6 @@ function addToCart() {
        cart[articul] = 1
     }
     localStorage.setItem('cart', JSON.stringify(cart))
-    // console.log(cart);
     showMiniCart()
 }
 

@@ -187,21 +187,11 @@ def callback(call):
                                                                            'back'))
             except KeyError:
                 print('ЧТо то пошло не так')
-                # empty_list[f'{call.message.chat.id}'] = {
-                #     'product_id': [str(Product.query.filter(Product.name == call.data).first())], 'coast': 1,
-                #     'in_cart': True}
-                # bot.answer_callback_query(callback_query_id=call.id, text='Добавлено в корзину')
-                # bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                #                               reply_markup=get_two_buttons('Удалить из корзины',
-                #                                                            'delete',
-                #                                                            '⬅️ Назад',
-                #                                                            'back'))
                 print(sessions)
 
         if call.data == 'del':
             # Обработка кнопки "Очистить корзину"
             sessions[f'{call.message.chat.id}']['products'].clear()
-            # print(empty_list)
             cart_markup = types.InlineKeyboardMarkup(row_width=2)
             btn = types.InlineKeyboardButton('🥢 В каталог', callback_data='back')
             cart_markup.add(btn)
@@ -215,16 +205,10 @@ def callback(call):
             payment = 'наличные'
             pr = [product_id for product_id in sessions[f'{call.message.chat.id}']['product_id']]
             products_id = [Product.query.filter(Product.name == pr[i]).first().id for i in range(len(pr))]
-            # for i in range(len(pr)):
-            #     p = Product.query.filter(Product.name == pr[i])
-            #     products_id.append(p)
-            # print(products_id)
-            # products_id = [Product.query.filter(Product.name == pr_name).first().id for pr_name in range(len(pr))]
             products_coast = 1
             order = Order(user_name=name, phone=phone, address=address, payment=payment)
             db.session.add(order)
             db.session.commit()
-            # print(products_id, products_coast)
             for i in range(len(products_id)):
                 cart = Cart(order_id=order.id, product_id=products_id[i], count=products_coast)
                 db.session.add(cart)

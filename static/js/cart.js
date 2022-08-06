@@ -42,10 +42,6 @@ $.getJSON('/get-products', function(data) {
                 out+='<br>'
                 
                 out+= '<br>'
-                // out+= goods[key].coast + 'руб';  
-                
-                // out+= cart[key];   
-                
                 out+= cart[key]*goods[key].price + 'руб'
                 out+= '<br>'
                 out+=`</div>`
@@ -62,8 +58,7 @@ $.getJSON('/get-products', function(data) {
             $('.plus').on('click', plusGoods)
             $('.minus').on('click', minusGoods)
             $('.delete').on('click', deleteGoods)
-            // $('.order').on('click', takeCart)
-            // $('.order').on('click', checkout)
+
             }
         
     }
